@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "filerenamer"
+version = "0.2.0"
+description = "A TUI file renaming tool with regex pattern matching and live preview"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "textual>=0.30.0",
+]
+
+[project.scripts]
+filerenamer = "filerenamer.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/filerenamer"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "venv/",
+    ".pytest_cache/",
+    "test_files/",
+    "*.pyc",
+    "__pycache__/",
+    ".claude/",
+]
