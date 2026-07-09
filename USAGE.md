@@ -126,6 +126,39 @@ You can perform mathematical operations on captured numbers using `\{N+expr}` sy
 
 **Supported operations**: `+`, `-`, `*`, `/`, `//` (floor division), `%` (modulo), `**` (exponent)
 
+### Number Padding in Mathematical Operations
+
+You can pad the results of mathematical operations with zeros or spaces:
+
+**Zero-padding to 2 digits**
+- Search: `Episode_([0-9]+)`
+- Replace: `Episode_\{01+5}`
+- Result: `Episode_3.mp4` → `Episode_08.mp4`
+
+**Zero-padding to 3 digits**
+- Search: `Chapter_([0-9]+)`
+- Replace: `Chapter_\{001+10}`
+- Result: `Chapter_5.pdf` → `Chapter_015.pdf`
+
+**Space-padding to 2 digits**
+- Search: `File_([0-9]+)`
+- Replace: `File_\{ 1+5}`
+- Result: `File_3.txt` → `File_ 8.txt`
+
+**Multiple groups with different padding**
+- Search: `S([0-9]+)E([0-9]+)`
+- Replace: `S\{01-1}E\{02+10}`
+- Result: `S2E5.mkv` → `S01E15.mkv`
+
+**Padding specification**:
+- `\{01...}` - Zero-pad to 2 digits
+- `\{001...}` - Zero-pad to 3 digits
+- `\{0001...}` - Zero-pad to 4 digits
+- `\{ 1...}` - Space-pad to 2 digits (one space before the group number)
+- `\{  1...}` - Space-pad to 3 digits (two spaces before the group number)
+
+See [MATH_OPERATIONS.md](MATH_OPERATIONS.md) for more details.
+
 ### Case Sensitivity
 - ✓ **Checked**: `file` will only match `file`, not `File` or `FILE`
 - □ **Unchecked**: `file` will match `file`, `File`, `FILE`, etc.

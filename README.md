@@ -6,6 +6,7 @@ A cross-platform TUI (Terminal User Interface) file renaming tool with regex pat
 
 - 🔍 **Regex Pattern Matching** - Use powerful regular expressions to match and transform filenames
 - 🧮 **Mathematical Operations** - Apply math operations to captured numbers (e.g., `\{1+10}` to add 10)
+- 📐 **Number Padding** - Zero-pad or space-pad results (e.g., `\{01+5}` for 2-digit zero-padding)
 - 👀 **Live Preview** - See renamed files in real-time as you type
 - ✅ **Selective Rename** - Choose which files to rename with space bar
 - ✏️ **Individual Overrides** - Edit specific filenames manually with Enter

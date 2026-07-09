@@ -93,6 +93,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `USAGE.md` - Added mathematical operations section with examples
 - `README.md` - Added math operations to feature list
 
+## [0.3.0] - 2026-07-10
+
+### Added
+- **Number Padding in Mathematical Operations** - Pad results with zeros or spaces
+  - Zero-padding: `\{01+10}` pads to 2 digits, `\{001+10}` pads to 3 digits, etc.
+  - Space-padding: `\{ 1+10}` pads with spaces to 2 digits, `\{  1+10}` pads to 3 digits
+  - Example: `Episode_([0-9]+)` with `Episode_\{01+5}` transforms `Episode_3` → `Episode_08`
+  - Works with all mathematical operations: addition, subtraction, multiplication, etc.
+  - Overflow handling: Result wider than padding width displays full number
+  - Multiple groups: Each group can have its own padding specification
+  - Negative numbers: Padding applied after the minus sign (e.g., `-05`)
+
+### Technical
+- Enhanced `_evaluate_math_expression()` to detect and apply padding specifications
+- Padding detection via regex pattern matching for leading zeros or spaces
+- Comprehensive test suite:
+  - `test_padding.py` - 11 tests covering all padding scenarios
+  - `demo_padding.py` - Interactive demonstration script
+  - All existing tests continue to pass (backward compatibility maintained)
+
+### Updated
+- `MATH_OPERATIONS.md` - Added complete padding documentation with examples
+- `USAGE.md` - Added number padding section with use cases
+- `README.md` - Added padding to feature list
+
 ## [Unreleased]
 
 ### Planned Features

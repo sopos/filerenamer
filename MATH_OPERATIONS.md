@@ -8,12 +8,17 @@ The File Renamer now supports mathematical operations on captured regex groups u
 
 ```
 \{N op value}
+\{0N op value}    (zero-pad to 2 digits)
+\{00N op value}   (zero-pad to 3 digits)
+\{ N op value}    (space-pad to 2 digits)
 ```
 
 Where:
 - `N` is the capture group number (1, 2, 3, ...)
 - `op` is a mathematical operator
 - `value` is a number or another expression
+- Leading zeros indicate zero-padding width (e.g., `01`, `001`, `0001`)
+- Leading spaces indicate space-padding width (e.g., ` 1`, `  1`)
 
 ## Supported Operations
 
@@ -64,13 +69,59 @@ Where:
 - **Input**: `Track_10_of_20.mp3`
 - **Output**: `Track_15_of_20.mp3`
 
+## Padding Results
+
+### Zero-Padding to 2 Digits
+- **Search**: `Episode_([0-9]+)`
+- **Replace**: `Episode_\{01+10}`
+- **Input**: `Episode_5.mp4`
+- **Output**: `Episode_15.mp4`
+- **Note**: Use `01` prefix to pad with zeros to 2 digits
+
+### Zero-Padding to 3 Digits
+- **Search**: `Chapter_([0-9]+)`
+- **Replace**: `Chapter_\{001+5}`
+- **Input**: `Chapter_3.pdf`
+- **Output**: `Chapter_008.pdf`
+- **Note**: Use `001` prefix to pad with zeros to 3 digits
+
+### Zero-Padding to 4 Digits
+- **Search**: `Track_([0-9]+)`
+- **Replace**: `Track_\{0001*2}`
+- **Input**: `Track_3.mp3`
+- **Output**: `Track_0006.mp3`
+
+### Space-Padding to 2 Digits
+- **Search**: `File_([0-9]+)`
+- **Replace**: `File_\{ 1+5}`
+- **Input**: `File_3.txt`
+- **Output**: `File_ 8.txt`
+- **Note**: Use a space before the group number to pad with spaces
+
+### Padding with Multiple Groups
+- **Search**: `S([0-9]+)E([0-9]+)`
+- **Replace**: `S\{01-1}E\{02+10}`
+- **Input**: `S2E5.avi`
+- **Output**: `S01E15.avi`
+- **Note**: Each group can have its own padding specification
+
+### Padding Overflow
+When the result is wider than the padding width, the full number is displayed:
+- **Search**: `Episode_([0-9]+)`
+- **Replace**: `Episode_\{01+100}`
+- **Input**: `Episode_5.mp4`
+- **Output**: `Episode_105.mp4`
+- **Note**: Result (105) is 3 digits, wider than padding width (2), so no padding applied
+
 ## How It Works
 
 1. The `\{...}` syntax indicates a mathematical expression
-2. Single digits (1-9) at the start of tokens are treated as capture group references
-3. Each capture group is substituted only once (first occurrence)
-4. The expression is evaluated using Python's `eval()` in a safe context
-5. Integer results are formatted without decimals (e.g., `10.0` becomes `10`)
+2. Leading zeros (`01`, `001`) or spaces (` 1`) specify padding width and character
+3. Single digits (1-9) at the start of tokens are treated as capture group references
+4. Each capture group is substituted only once (first occurrence)
+5. The expression is evaluated using Python's `eval()` in a safe context
+6. Integer results are formatted without decimals (e.g., `10.0` becomes `10`)
+7. Padding is applied to the final result if specified
 
 ## Mixing with Standard Backreferences
 

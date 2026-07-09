@@ -12,16 +12,34 @@ def _evaluate_math_expression(expr: str, match_groups: tuple) -> str:
 
     Args:
         expr: Expression like "1+10" or "2*2-1" where leading numbers are group refs
+              Can include padding: "01+10" (zero-pad to 2), " 1+10" (space-pad to 2)
         match_groups: Tuple of captured groups from regex match
 
     Returns:
-        Result of the expression as a string
+        Result of the expression as a string, with optional padding
     """
+    # Check for padding specification at the start of the expression
+    # Format: 0N, 00N, 000N for zero-padding or space + N for space-padding
+    padding_width = 0
+    padding_char = ''
+
+    # Check for zero-padding (e.g., "01", "001")
+    zero_pad_match = re.match(r'^(0+)(\d)', expr)
+    if zero_pad_match:
+        padding_char = '0'
+        padding_width = len(zero_pad_match.group(1)) + 1  # +1 for the digit itself
+    else:
+        # Check for space-padding (e.g., " 1", "  1")
+        space_pad_match = re.match(r'^( +)(\d)', expr)
+        if space_pad_match:
+            padding_char = ' '
+            padding_width = len(space_pad_match.group(1)) + 1  # +1 for the digit itself
+
     # Strategy: Replace group references that appear as operands (not part of literals)
     # We'll parse tokens and replace only bare number tokens that match group indices
 
-    # Tokenize the expression (numbers, operators, parens)
-    tokens = re.findall(r'\d+\.?\d*|[+\-*/%()]', expr)
+    # Tokenize the expression (numbers, operators, parens, spaces)
+    tokens = re.findall(r'\d+\.?\d*|[+\-*/%()]| +', expr)
 
     # Track which group numbers we've already substituted
     substituted = set()
@@ -29,6 +47,10 @@ def _evaluate_math_expression(expr: str, match_groups: tuple) -> str:
     # Replace tokens that are group references (process in order)
     result_tokens = []
     for token in tokens:
+        # Skip space tokens in tokenization (they were only for padding detection)
+        if token.strip() == '':
+            continue
+
         if token.isdigit() and 1 <= int(token) <= len(match_groups) and int(token) not in substituted:
             # This looks like a group reference (groups are 1-indexed)
             group_idx = int(token)
@@ -54,8 +76,20 @@ def _evaluate_math_expression(expr: str, match_groups: tuple) -> str:
         result = eval(final_expr, {"__builtins__": {}}, {})
         # Format result - remove decimal if it's a whole number
         if isinstance(result, float) and result.is_integer():
-            return str(int(result))
-        return str(result)
+            result_str = str(int(result))
+        else:
+            result_str = str(result)
+
+        # Apply padding if specified
+        if padding_width > 0 and padding_char:
+            # Handle negative numbers specially
+            if result_str.startswith('-'):
+                # Pad after the minus sign
+                result_str = '-' + result_str[1:].rjust(padding_width - 1, padding_char)
+            else:
+                result_str = result_str.rjust(padding_width, padding_char)
+
+        return result_str
     except Exception:
         # If evaluation fails, return the expression as-is
         return expr
