@@ -17,15 +17,25 @@ class FileItem:
     is_directory: bool = False
     depth: int = 0
     parent_path: Optional[Path] = None
+    relative_path: Optional[Path] = None
+    root_path: Optional[Path] = None
+    is_whole_path: bool = False
 
     @property
     def is_changed(self) -> bool:
         """Check if the new name differs from the original."""
+        if self.is_whole_path and self.relative_path is not None:
+            return self.relative_path.as_posix() != self.new_name
         return self.original_name != self.new_name
 
     @property
     def full_new_path(self) -> Path:
         """Get the full path with the new name."""
+        # In whole-path mode the new name represents a full path relative to
+        # the scan root (it may collapse or add directory segments), so
+        # resolve it against the root rather than the original parent dir.
+        if self.is_whole_path and self.root_path is not None:
+            return self.root_path / self.new_name
         if self.parent_path:
             return self.parent_path / self.new_name
         return self.original_path.parent / self.new_name
@@ -39,6 +49,7 @@ class RenameOperation:
     replace_pattern: str = ""
     case_sensitive: bool = True
     use_regex: bool = True
+    whole_path: bool = False
 
     def is_valid(self) -> bool:
         """Check if the operation has valid parameters."""

@@ -55,6 +55,10 @@ class ControlPanel(Container):
         width: 22;
     }
 
+    #whole-path-checkbox {
+        width: 22;
+    }
+
     #button-container {
         width: auto;
         height: auto;
@@ -70,6 +74,7 @@ class ControlPanel(Container):
         self.search_pattern = ""
         self.replace_pattern = ""
         self.case_sensitive = True
+        self.whole_path = True
 
     def compose(self) -> ComposeResult:
         """Create child widgets."""
@@ -83,6 +88,7 @@ class ControlPanel(Container):
 
         with Horizontal(id="options-container"):
             yield Checkbox("Case Sensitive", value=True, id="case-checkbox")
+            yield Checkbox("Whole Path", value=True, id="whole-path-checkbox")
             with Horizontal(id="button-container"):
                 yield Button("Apply", variant="primary", id="apply-button")
                 yield Button("Exit", variant="error", id="exit-button")
@@ -101,6 +107,9 @@ class ControlPanel(Container):
         """Handle checkbox changes."""
         if event.checkbox.id == "case-checkbox":
             self.case_sensitive = event.value
+            self._emit_pattern_changed()
+        elif event.checkbox.id == "whole-path-checkbox":
+            self.whole_path = event.value
             self._emit_pattern_changed()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -126,5 +135,6 @@ class ControlPanel(Container):
             search_pattern=self.search_pattern,
             replace_pattern=self.replace_pattern,
             case_sensitive=self.case_sensitive,
-            use_regex=True
+            use_regex=True,
+            whole_path=self.whole_path
         )

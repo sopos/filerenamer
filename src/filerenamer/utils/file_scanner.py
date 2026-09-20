@@ -41,7 +41,9 @@ def scan_directory(path: Path, max_depth: int = 10) -> List[FileItem]:
                     new_name=entry.name,
                     is_directory=is_dir,
                     depth=depth,
-                    parent_path=entry.parent
+                    parent_path=entry.parent,
+                    relative_path=relative_path,
+                    root_path=path
                 )
                 items.append(item)
 
@@ -91,6 +93,10 @@ def apply_renames(items: List[FileItem]) -> Dict[Path, RenameResult]:
                 )
                 continue
 
+            # Ensure the destination directory exists (whole-path renames can
+            # move a file into a different, possibly new, subdirectory)
+            new_path.parent.mkdir(parents=True, exist_ok=True)
+
             # Perform the rename
             item.original_path.rename(new_path)
 
@@ -135,19 +141,16 @@ def validate_renames(items: List[FileItem]) -> List[str]:
     errors = []
     selected_items = [item for item in items if item.is_selected and item.is_changed]
 
-    # Check for duplicate new names in the same directory
-    new_names_by_dir: Dict[Path, List[str]] = {}
+    # Check for duplicate resolved target paths (covers both same-directory
+    # renames and whole-path renames that move files across directories)
+    seen_targets: Dict[Path, bool] = {}
 
     for item in selected_items:
-        parent = item.original_path.parent
-        new_name = item.new_name
+        target = item.full_new_path
 
-        if parent not in new_names_by_dir:
-            new_names_by_dir[parent] = []
-
-        if new_name in new_names_by_dir[parent]:
-            errors.append(f"Duplicate name in {parent}: {new_name}")
+        if target in seen_targets:
+            errors.append(f"Duplicate target path: {target}")
         else:
-            new_names_by_dir[parent].append(new_name)
+            seen_targets[target] = True
 
     return errors

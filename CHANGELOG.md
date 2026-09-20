@@ -5,6 +5,17 @@ All notable changes to the File Renamer project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-09-20
+
+### Added
+- **Whole Path Processing** - New "Whole Path" checkbox (enabled by default) lets search/replace patterns match against a file's path relative to the scanned root instead of just its filename
+  - Enables patterns that collapse directory structure into the filename, e.g. `S(\d+)/(\d+)\.txt` → `S\1E\2.txt` transforms `S01/01.txt` into `S01E01.txt`
+  - Renaming can move files across directories, creating destination directories as needed
+
+### Technical
+- `FileItem` now tracks `relative_path`, `root_path`, and `is_whole_path` to resolve rename targets relative to the scan root
+- `validate_renames()` now detects duplicate conflicts by resolved target path instead of assuming same-directory renames
+
 ## [0.1.0] - 2026-06-04
 
 ### Initial Release

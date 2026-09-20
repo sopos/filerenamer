@@ -140,6 +140,7 @@ class FileRenamerApp(App):
             for file_item in self.files:
                 if not file_item.is_custom_override:
                     file_item.new_name = file_item.original_name
+                    file_item.is_whole_path = False
         else:
             # Apply the pattern
             self.files = preview_renames(self.files, self.current_operation)

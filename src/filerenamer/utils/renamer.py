@@ -216,9 +216,18 @@ def preview_renames(
             updated_files.append(file_item)
             continue
 
+        # When whole-path mode is enabled, match/replace against the file's
+        # path relative to the scan root (e.g. "S01/01.txt") instead of just
+        # its name, so patterns can collapse directories into the filename
+        # (e.g. "S01/01.txt" -> "S01E01.txt").
+        if operation.whole_path and file_item.relative_path is not None:
+            source = file_item.relative_path.as_posix()
+        else:
+            source = file_item.original_name
+
         # Apply the pattern to get the new name
         new_name = apply_pattern(
-            file_item.original_name,
+            source,
             operation.search_pattern,
             operation.replace_pattern,
             operation.case_sensitive,
@@ -234,7 +243,10 @@ def preview_renames(
             is_custom_override=file_item.is_custom_override,
             is_directory=file_item.is_directory,
             depth=file_item.depth,
-            parent_path=file_item.parent_path
+            parent_path=file_item.parent_path,
+            relative_path=file_item.relative_path,
+            root_path=file_item.root_path,
+            is_whole_path=operation.whole_path
         )
         updated_files.append(updated_item)
 
