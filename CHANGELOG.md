@@ -5,6 +5,11 @@ All notable changes to the File Renamer project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-09-20
+
+### Fixed
+- **Whole Path checkbox had no effect** - `ControlPanel._emit_pattern_changed()` (fired on every keystroke/checkbox toggle) built its `RenameOperation` without passing `whole_path`, so live typing always matched against the filename only regardless of the checkbox state
+
 ## [0.4.0] - 2026-09-20
 
 ### Added

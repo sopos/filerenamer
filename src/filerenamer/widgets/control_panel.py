@@ -125,7 +125,8 @@ class ControlPanel(Container):
             search_pattern=self.search_pattern,
             replace_pattern=self.replace_pattern,
             case_sensitive=self.case_sensitive,
-            use_regex=True
+            use_regex=True,
+            whole_path=self.whole_path
         )
         self.post_message(PatternChanged(operation))
 
