@@ -16,6 +16,28 @@ A cross-platform TUI (Terminal User Interface) file renaming tool with regex pat
 
 ## Installation
 
+### Using pipx (recommended)
+
+[pipx](https://pypa.github.io/pipx/) installs the tool into an isolated environment and puts the `filerenamer` command on your PATH.
+
+```bash
+# Install directly from GitHub
+pipx install git+https://github.com/sopos/filerenamer.git
+
+# Or install from a local clone
+git clone https://github.com/sopos/filerenamer.git
+cd filerenamer
+pipx install .
+```
+
+To upgrade later:
+
+```bash
+pipx upgrade filerenamer
+```
+
+### Using pip
+
 ```bash
 pip install -e .
 ```
